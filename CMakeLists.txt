@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(reactor main.cpp EventLoop.cpp)
 
-target_link_libraries(reactor pthread)
+target_link_libraries(reactor pthread glog)

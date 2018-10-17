@@ -9,12 +9,15 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <thread>
+#include <glog/logging.h>
+#include <poll.h>
 
 class EventLoop: Nocopyable {
 public:
   EventLoop();
   ~EventLoop();
   void loop();
+  EventLoop* getEventLoopOfCurrentThread();
   void assertInLoopThread() {
     if (!isInLoopThread()) {
       abortNotInLoopThread();
