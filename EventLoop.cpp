@@ -22,7 +22,9 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::abortNotInLoopThread() {
-
+  LOG(FATAL)
+    << "no run in same thread, created threadId " << threadId_
+    << " running threadId " << std::this_thread::get_id();
 }
 
 EventLoop* EventLoop::getEventLoopOfCurrentThread() {
