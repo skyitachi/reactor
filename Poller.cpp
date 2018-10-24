@@ -40,9 +40,14 @@ absl::Time Poller::poll(int timeoutMs, ChannelList* activeChannels) {
   if (numEvents > 0) {
     LOG(INFO) << "numEvents: " << numEvents << " happended";
     // TODO: 填充channels
+    fillActiveChannels(numEvents, activeChannels);
   } else if (numEvents == 0) {
     LOG(INFO) << "no events happpend";
   } else {
     LOG(ERROR) << "Poller::poll()";
   }
+}
+
+void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const {
+    
 }
