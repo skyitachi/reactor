@@ -23,3 +23,14 @@ Channel::Channel(EventLoop *loop, int fd)
 void Channel::update() {
   loop_->updateChannel(this);
 }
+
+void Channel::handleEvent() {
+  if ((revents_ & kReadEvent) && readCallback_ != NULL) {
+    LOG(INFO) << "handle read event";
+    readCallback_();
+  }
+  if ((revents_ & kWriteEvent) && readCallback_ != NULL) {
+    LOG(INFO) << "handle write event";
+    writeCallback_();
+  }
+}

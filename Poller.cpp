@@ -14,7 +14,7 @@ Poller::~Poller() {
 
 void Poller::updateChannel(Channel* channel) {
   assertInLoopThread();
-  LOG(INFO) << "fd = " << channel->fd() << "events = " << channel->events();
+  LOG(INFO) << "fd = " << channel->fd() << " events = " << channel->events();
   if (channel->index() == -1) {
     assert(channels_.find(channel->fd()) == channels_.end());
     struct pollfd pfd;
@@ -29,12 +29,13 @@ void Poller::updateChannel(Channel* channel) {
     int idx = channel->index();
     assert(pollfds_.size() < idx);
     struct pollfd pfd = pollfds_[idx];
-    pfd.events = channel->events;
+    pfd.events = channel->events();
   }
 }
 
 absl::Time Poller::poll(int timeoutMs, ChannelList* activeChannels) {
   assertInLoopThread();
+  LOG(INFO) << "polllfds size: " << pollfds_.size();
   int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
   absl::Time now = absl::Now();
   if (numEvents > 0) {
@@ -46,8 +47,15 @@ absl::Time Poller::poll(int timeoutMs, ChannelList* activeChannels) {
   } else {
     LOG(ERROR) << "Poller::poll()";
   }
+  return now;
 }
 
-void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const {
-    
+void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) {
+  for (auto it = pollfds_.begin(); it != pollfds_.end(); it++) {
+    Channel* channel = channels_[it->fd];
+    if (channel->events() & it->revents) {
+      channel->set_revents(it->revents);
+      activeChannels->push_back(channel);
+    }
+  }
 }

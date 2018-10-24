@@ -21,6 +21,7 @@ public:
   EventLoop();
   ~EventLoop();
   void loop();
+  void quit();
   EventLoop* getEventLoopOfCurrentThread();
   void assertInLoopThread() {
     if (!isInLoopThread()) {

@@ -18,7 +18,7 @@ class Channel;
 class Poller: Nocopyable {
 public:
   typedef std::vector<Channel*> ChannelList;
-  Poller(EventLoop *loop) {}
+  Poller(EventLoop *loop): ownerLoop_(loop) {}
   ~Poller();
 
   // Poll
@@ -27,11 +27,12 @@ public:
   void updateChannel(Channel* channel);
 
   void assertInLoopThread() {
+    LOG(INFO) << "in the poller assert " << ownerLoop_;
     ownerLoop_->assertInLoopThread();
   }
 
 private:
-  void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
+  void fillActiveChannels(int numEvents, ChannelList* activeChannels);
   typedef std::vector<struct pollfd> PollFdList;
   typedef std::map<int, Channel*> ChannelMap;
 

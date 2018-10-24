@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(reactor main.cpp EventLoop.cpp Channel.cpp Poller.cpp Poller.h)
 
-target_link_libraries(reactor pthread glog absl_time)
+target_link_libraries(reactor pthread glog absl_time absl_base absl_spinlock_wait absl_int128)
