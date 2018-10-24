@@ -3,6 +3,6 @@ project(reactor)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(reactor main.cpp EventLoop.cpp)
+add_executable(reactor main.cpp EventLoop.cpp Channel.cpp Poller.cpp Poller.h)
 
-target_link_libraries(reactor pthread glog)
+target_link_libraries(reactor pthread glog absl_time)

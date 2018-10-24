@@ -3,7 +3,8 @@
 //
 
 #include "EventLoop.h"
-
+#include "Channel.h"
+#include "Poller.h"
 // thread_local variable
 __thread EventLoop* t_loopInThisThread = 0;
 
@@ -39,4 +40,11 @@ void EventLoop::loop() {
 
   DLOG(INFO) << "EventLoop " << this << " stop looping";
   looping_ = false;
+}
+
+// channel 只能在同一个 io线程中
+void EventLoop::updateChannel(Channel* channel) {
+  assert(channel->ownerLoop() == this);
+  assertInLoopThread();
+  poller_->updateChannel(channel);
 }

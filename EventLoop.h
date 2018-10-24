@@ -11,7 +11,11 @@
 #include <thread>
 #include <glog/logging.h>
 #include <poll.h>
+#include <vector>
+#include <memory>
 
+class Channel;
+class Poller;
 class EventLoop: Nocopyable {
 public:
   EventLoop();
@@ -27,10 +31,16 @@ public:
     return threadId_ == std::this_thread::get_id();
   }
 
+  void updateChannel(Channel* channel);
+
 private:
+  typedef std::vector<Channel *> ChannelList;
   const std::thread::id threadId_;
   void abortNotInLoopThread();
   bool looping_;
+  bool quit_;
+  std::unique_ptr<Poller> poller_;
+  ChannelList activeChannels_;
 };
 
 
