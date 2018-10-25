@@ -40,7 +40,8 @@ void EventLoop::loop() {
   assertInLoopThread();
   looping_ = true;
   quit_ = false;
-  while (!quit_) {
+  int cnt = 0;
+  while (!quit_ && cnt++ < 3) {
     activeChannels_.clear();
     absl::Time now = absl::Now();
     absl::Time t = poller_->poll(5000, &activeChannels_);

@@ -29,7 +29,8 @@ void Channel::handleEvent() {
     LOG(INFO) << "handle read event";
     readCallback_();
   }
-  if ((revents_ & kWriteEvent) && readCallback_ != NULL) {
+  LOG(INFO) << "in the handleEvent for write";
+  if ((revents_ & kWriteEvent) && writeCallback_ != NULL) {
     LOG(INFO) << "handle write event";
     writeCallback_();
   }

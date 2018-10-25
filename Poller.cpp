@@ -27,8 +27,10 @@ void Poller::updateChannel(Channel* channel) {
     channels_[pfd.fd] = channel;
   } else {
     int idx = channel->index();
-    assert(pollfds_.size() < idx);
-    struct pollfd pfd = pollfds_[idx];
+    LOG(INFO) << "update channel index: " << idx;
+    assert(pollfds_.size() > idx);
+    // Note: must be reference
+    struct pollfd& pfd = pollfds_[idx];
     pfd.events = channel->events();
   }
 }
@@ -40,7 +42,6 @@ absl::Time Poller::poll(int timeoutMs, ChannelList* activeChannels) {
   absl::Time now = absl::Now();
   if (numEvents > 0) {
     LOG(INFO) << "numEvents: " << numEvents << " happended";
-    // TODO: 填充channels
     fillActiveChannels(numEvents, activeChannels);
   } else if (numEvents == 0) {
     LOG(INFO) << "no events happpend";
@@ -51,11 +52,15 @@ absl::Time Poller::poll(int timeoutMs, ChannelList* activeChannels) {
 }
 
 void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) {
-  for (auto it = pollfds_.begin(); it != pollfds_.end(); it++) {
-    Channel* channel = channels_[it->fd];
-    if (channel->events() & it->revents) {
-      channel->set_revents(it->revents);
-      activeChannels->push_back(channel);
+  for (auto it = pollfds_.begin(); it != pollfds_.end() && numEvents > 0; it++) {
+    if (it->revents > 0) {
+      numEvents--;
+      Channel* channel = channels_[it->fd];
+      LOG(INFO) <<"poll events: " << it->events << " poll revents: " << it->revents << " channel events: " << channel->events();
+      if (channel->events() & it->revents) {
+        channel->set_revents(it->revents);
+        activeChannels->push_back(channel);
+      }
     }
   }
 }
